@@ -1,0 +1,37 @@
+\newif\ifAorC
+\if\set A \AorCtrue\else\if\set C \AorCtrue\else \AorCfalse\fi\fi
+
+\ifx\set\setbegin % run once
+    \let\oldphi\phi
+    \let\phi\varphi
+    \let\varphi\oldphi
+
+    \makeatletter
+    % \NewTColorBox{celltcolorbox}{O{}}{
+    \newtcolorbox{celltcolorbox}[1][]{
+        on line, 
+        colback=black!5,
+        colframe=white, boxrule=4pt,
+        width=36pt, height=24pt, 
+        valign=center,
+        baseline={(\tcb@height/2-2pt)},
+        size=small,
+        #1
+    }
+    \makeatother
+    \newcommand{\cell}[2][]{\begin{celltcolorbox}[#1]
+    \centering\ensuremath{\ifprintanswers#2\fi}
+    \end{celltcolorbox}}
+    
+    % \NewTColorBox{redbox}{O{} m}{
+    \newtcolorbox[auto counter]{redbox}[2][]{
+        colback=red!5!white,
+        colframe=red!75!black,
+        fonttitle=\bfseries,
+        colbacktitle=red!85!black,
+        enhanced,
+        attach boxed title to top center={yshift=-2mm},
+        title={#2},
+        #1
+    }
+\fi

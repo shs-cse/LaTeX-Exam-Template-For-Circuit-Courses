@@ -163,12 +163,17 @@ The order of questions are shuffled by default. If not desired, it can be turned
 \def\shufflequestionorder{true} % false -> no question shuffling
 ```
 
+## Unshuffled First and Last Files
+If you wish to add something right after `questions` environments starts and ends, us the [`questions/unshuffled/first.tex`](questions/unshuffled/first.tex) and [`questions/unshuffled/last.tex`](questions/unshuffled/last.tex) files. 
+
+Even if the other questions are shuffled, these will remain at the first/last position. The `first.tex` file is good for setups and the `last.tex` is good for final questions/remarks
+
 ## Choice Shuffling
 Similar to the question shuffling, setting `\shufflequestionorder` to `false` will add the mcq choices as written in question files.
 
 ## Other Options
 ```latex
-\def\questionsintwocolumns{true} % false -> questions in one column
-\def\insertomrsheet{true} % false -> no OMR sheet
+\def\questionsintwocolumns{true} % set to "!true" for questions in one column
+\def\insertomrsheet{true} % set to "!true" for no OMR sheet
 \def\eachsetonsinglepaper{A3} % generate exams in booklet on A3 paper
-```
+```.
