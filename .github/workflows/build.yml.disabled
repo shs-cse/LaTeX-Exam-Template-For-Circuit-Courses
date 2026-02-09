@@ -1,4 +1,4 @@
-# remove the ".bkup" part from the file name if you want to actually use github actions to compile the pdf.
+# remove the ".disabled" part from this file name if you want to actually use github actions to compile the pdf.
 
 name: Build LaTeX document
 on: [push]
