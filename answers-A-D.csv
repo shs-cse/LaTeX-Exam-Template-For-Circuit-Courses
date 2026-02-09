@@ -1,0 +1,17 @@
+Set,Question No.,File Name,Question Marks,Correct Answer
+A,1,questions/3.tex,5,B
+A,2,questions/02.tex,1,C
+A,3,questions/A/01.tex,2,A
+A,4,questions/4.tex,2,A
+B,1,questions/02.tex,1,E
+B,2,questions/4.tex,2,B
+B,3,questions/3.tex,5,B
+B,4,questions/B/01.tex,2,A
+C,1,questions/3.tex,5,A
+C,2,questions/01.tex,2,D
+C,3,questions/02.tex,1,E
+C,4,questions/4.tex,2,B
+D,1,questions/4.tex,2,C
+D,2,questions/01.tex,2,B
+D,3,questions/3.tex,5,D
+D,4,questions/02.tex,1,B

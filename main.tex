@@ -1,0 +1,288 @@
+% -------------------------------PARAMETERS-----------------------------------------
+% course related parameters
+\def\coursecode{CSE481}
+\def\coursename{Quantum Computing I}
+% section related parameters
+\def\semester{Fall 2025}
+\def\sect{01} % can be omitted by commenting
+\def\faculty{SDS} % can be omitted by commenting
+% assessment related parameters
+\def\assessment{Lab Quiz}
+\def\duration{1 hour}
+% \def\date{November 3, 2025} % can be set to today by commenting
+% submission specific parameters
+% \def\deadline{November 07, 2023 by 11:59pm} % can be omitted by commenting
+% \def\formurl{https://forms.gle/5yw6CkdLebt1YH92A} % can be omitted by commenting
+% set related parameters
+\def\setbegin{A} % uppercase letters A to Z, AA, AB...
+\def\setend{D} % uppercase letters A to Z, AA, AB...
+\def\numpagesperset{0} % minimum number of pages per set
+% options for pdf generation
+\def\eachsetonsinglepaper{A3} % options: A3/A4/A*. print each set in a single paper
+\def\showsetinheader{true} % show/hide set in page headers
+\def\showsolutions{!true} % show/hide answers in the generated pdf
+\def\shufflequestionorder{true}
+\def\shufflechoiceorder{true}
+\def\questionsintwocolumns{true}
+\def\insertomrsheet{true}
+\def\quantumcomputing{!true}
+
+% --------------------------------PACKAGES------------------------------------------
+\documentclass[addpoints, a4paper]{exam}
+\usepackage{anyfontsize, amssymb, amsmath}
+\usepackage{qrcode, refcount}
+\usepackage[colorlinks=true,allcolors=.,urlcolor={magenta}]{hyperref}
+\usepackage[shortlabels]{enumitem}
+\usepackage{pifont,colortbl}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[many]{tcolorbox}
+\ifdefstring{\quantumcomputing}{true}{
+    \usepackage{physics, array,listings,tikz}
+    \usepackage[compat=0.6]{yquant}
+    \usepackage[c]{esvect}
+}{ % electrical circuits
+    \usepackage[siunitx, american, RPvoltages, cuteinductors]{circuitikz}
+}
+
+% ---------------------------OPTIONAL PACKAGES--------------------------------------
+% print answers from exam class
+\ifdefstring{\showsolutions}{true}{\printanswers}{}
+% separator between two columns
+\setlength{\columnseprule}{0.4pt}
+% prevent wierd word break hyphenations
+\setlength{\emergencystretch}{3em}
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+% shuffle mcq choices
+\ifdefstring{\shufflechoiceorder}{true}{}{
+    \PassOptionsToPackage{norandomize}{exam-randomizechoices}
+}
+\usepackage[overload]{exam-randomizechoices}
+% single A3 or A4 paper case
+\ifdefstring{\eachsetonsinglepaper}{A3}{
+    \usepackage[print,four]{booklet}
+    \source{\magstep0}{\paperwidth}{\paperheight}
+    \target{\magstep0}{2\paperwidth}{\paperheight}
+    \AtBeginDocument{
+        \ifpdf
+            \setpdftargetpages
+        \else
+            \setdvipstargetpages
+        \fi
+    }
+    \def\numpagesperset{4} % A4=2, A3=4
+    % add dotted fold line
+    \usepackage{eso-pic}
+    \AddToShipoutPictureBG{%
+        \ifodd\thepage
+        \put(\LenToUnit{\paperwidth+69pt},\LenToUnit{-72pt}){
+            \color{black!30}%
+            \setlength{\unitlength}{1mm}%
+            \begin{picture}(0,0)
+                \multiput(0,0)(0,3){100}{\line(0,1){0.5}}
+            \end{picture}%
+        }%
+        \fi
+    }
+}{
+    \ifdefstring{\eachsetonsinglepaper}{A4}{
+        \def\numpagesperset{2} % A4=2, A3=4
+    }{}
+}
+
+% make operators upright
+\makeatletter
+\def\do#1{%
+  \count@=`#1%
+  \begingroup\uccode`a=\count@
+  \uppercase{\endgroup\DeclareMathSymbol{a}}{\mathalpha}{operators}{\count@}%
+}
+\makeatother
+\ifdefstring{\quantumcomputing}{true}{
+    \docsvlist{A,B,C,D,G,H,I,M,N,P,Q,R,S,T,U,V,W,X,Y,Z}
+    \newcommand{\mn}[1]{\mathnormal{#1}}
+    
+    \def\clr#1#2{\ensuremath{\mathcolor{#1}{#2}}}
+    \def\red#1{\clr{red}{#1}}
+    \def\cyn#1{\clr{cyan}{#1}}
+    \def\rng#1{\clr{orange}{#1}}
+    \def\invrt#1{\ensuremath{\frac{1}{\sqrt{#1}}}}
+    \DeclareMathOperator{\prob}{P}
+}{  % siunitx package setup
+    \sisetup{parse-numbers=false}
+    % short-hand for resistor units, e.g. 
+    % in circuitikz: 1<\MO>, 2<\mA>, 3<\kV>, 4<\uF>, 5<\nH>, 6<\C> 
+    % in math-mode: \qty{1}{\MO}
+    \DeclareSIUnit{\mO}{\milli\ohm}
+    \DeclareSIUnit{\kO}{\kilo\ohm}
+    \DeclareSIUnit{\MO}{\mega\ohm}
+    % centered circitikz environment
+    \newenvironment{cctikz}[1][]{%
+        \begin{center}\begin{tikzpicture}[#1]%
+    }{%
+        \end{tikzpicture}\end{center}%
+    }
+}
+
+
+% ---------------------------------PREAMBLE-----------------------------------------
+% Write last page info to aux file at end of set
+\makeatletter
+\newcommand{\myendofset}[1]{%
+  \immediate\write\@auxout{%
+    \string\global\string\@namedef{lastpage@#1}{\inteval{\thepage-1}}%
+  }%
+}
+
+% Retrieve last page for a set
+\newcommand{\lastpage}[1]{%
+  \@ifundefined{lastpage@#1}{??}{\@nameuse{lastpage@#1}}%
+}
+\makeatother
+% typesetting code for a single set
+\newcounter{setquestion}
+\ExplSyntaxOn
+\int_new:N \l_set_question_int % question number in a set
+\seq_new:N \l_questions_seq % sequence of question file names
+\int_new:N \l_counter_int % iterator to comb through questions folder
+\tl_new:N \l_filenumber_tl % counter -> question file number as tl
+\tl_new:N \l_filename_tl % counter -> question file name
+\tl_new:N \l_seed_tl % randomization seed
+\tl_new:N \l_set_bin_tl % set to binary encoding
+% macro for filling up set identifier
+\cs_new:Npn \execifzero #1#2 {
+    \int_if_zero:nT {
+        \tl_item:Nn \l_set_bin_tl {#1}
+    } {#2}
+}
+% print list of questions in a set
+\cs_new:Nn \set_questions:{
+    % convert set to binary
+    \tl_set:Nx \l_set_bin_tl {\int_to_bin:n {\l_set_now_int}}
+    \tl_set:Nx \l_tempa_tl { % pad leading zeros to length 8
+        \prg_replicate:nn {\int_eval:n {8-\tl_count:N \l_set_bin_tl}} {0}
+    }
+    \tl_put_left:Nx \l_set_bin_tl {\l_tempa_tl}
+    % generate seed from \semester,\assessment,\set etc.
+    \tl_set:Nx \l_seed_tl {%
+        \semester>\coursecode>%
+        \ifdefined\sect\sect>\fi%
+        \ifdefined\faculty\faculty>\fi%
+        \assessment>\set
+    }
+    \tl_set:Nx \l_seed_tl {\str_uppercase:f {\l_seed_tl}}
+    \tl_set:Nx \l_seed_tl {\str_mdfive_hash:e {\l_seed_tl}}
+    \tl_set:Nx \l_seed_tl {\tl_range:Nnn \l_seed_tl {1} {7}}
+    \exp_args:NNx \tl_set:Nx \l_seed_tl {\exp_not:N \int_from_hex:n {\l_seed_tl}}
+    \sys_gset_rand_seed:n {\l_seed_tl}
+    \setrandomizerseed{\l_seed_tl}
+    % add all folders to search paths
+    \seq_clear:N \l_file_search_path_seq
+    \seq_put_right:Nx \l_file_search_path_seq {questions/\set} % search in sets first
+    \seq_put_right:Nn \l_file_search_path_seq {questions}
+    % iterate to find all question files and populate seq var
+    \seq_clear:N \l_questions_seq
+    \int_set:Nn \l_counter_int {1}
+    \int_do_while:nn {\l_counter_int<100} {
+        % int to tl -> "X"
+        \tl_set:Nx \l_filenumber_tl {\int_to_arabic:n {\l_counter_int}}
+        % find file -> "X.tex" or "0X.tex"
+        \file_get_full_name:nNF {\l_filenumber_tl.tex} \l_filename_tl {
+            \file_get_full_name:nNF {0\l_filenumber_tl.tex} \l_filename_tl {}
+        }
+        % append to seq var if not empty
+        \tl_if_empty:NF \l_filename_tl {
+            \seq_put_right:Nx \l_questions_seq \l_filename_tl
+        }
+        \int_incr:N \l_counter_int
+    }
+    \tl_if_eq:NnT \shufflequestionorder {true} { % shuffle question order if true
+        % add numbered questions
+        \seq_shuffle:N \l_questions_seq
+    }
+    % add first unshuffled file
+    \file_get_full_name:nNT {unshuffled/first.tex} \l_filename_tl {
+        \seq_put_left:Nx \l_questions_seq \l_filename_tl
+    }
+    % add last unshuffled file
+    \file_get_full_name:nNT {unshuffled/last.tex} \l_filename_tl {
+        \seq_put_right:Nx \l_questions_seq \l_filename_tl
+    }
+    % pdf content for a single set
+    \setcounter{page}{1}
+    \extraheadheight[80pt]{0pt} % extra space for first page header 
+    % insert instructions
+    \def\insertinstructionsandomr{%
+        \ExplSyntaxOff % spaces and colon in tikz issue
+        {\centering\input{instructions-omr}\par}
+        \ExplSyntaxOn
+    }
+    \tl_if_eq:NnTF \questionsintwocolumns {true}    
+        {\twocolumn[\insertinstructionsandomr]} 
+        {\fullwidth{\insertinstructionsandomr}} % hacky way to fix centering
+    % start questions
+    \tl_if_eq:NNT \setbegin \set {\questions} % ensure \begin{questions}
+    \begingradingrange{\set}
+        \int_set:Nn \l_set_question_int {0}
+        \seq_map_inline:Nn \l_questions_seq {
+            \xdef\oldthequestion{\thequestion} % track if \thequestion increases
+            \setcounter{setquestion}{ % for call in \qformat
+                \int_to_arabic:n {\l_set_question_int}
+            }
+            \ExplSyntaxOff % spaces and colon in tikz issue
+            \input{##1}
+            \ExplSyntaxOn
+            \int_while_do:nn {\thequestion>\oldthequestion} { % avoid empty file
+                % set counter for \qformat
+                \int_incr:N \l_set_question_int
+                \stepcounter{setquestion}
+                \xdef\oldthequestion{\fpeval{1+\oldthequestion}}
+                % parse marks and replace \half if needed
+                \tl_set:Nf \l_tempa_tl {\pointsofquestion{\oldthequestion}}
+                \tl_replace_once:Nnn \l_tempa_tl {\half} {.5}
+                \exp_args:NNo \str_set:Nn \l_tempa_str {\l_tempa_tl} % handle "??"
+                % write to csv file
+                \iow_now:Nx \l_csv_iow {
+                    \set, \thesetquestion, ##1, \l_tempa_str,
+                    \getrefnumber{question@\oldthequestion@correctchoice}
+                }
+                \ifdefstring{\insertFilbreakAfterEachQuestion}{true}{\bigskip\filbreak}{}
+            }
+        }
+    \endgradingrange{\set}
+    \int_if_zero:nF \numpagesperset {
+        \int_set:Nn \l_tmpa_int {\int_div_truncate:nn {\thepage+\numpagesperset-1} {\numpagesperset}}
+        \int_while_do:nn {\thepage <= \l_tmpa_int*\numpagesperset} {\null\clearpage}
+    }
+    \clearpage
+    \myendofset{\set}
+}
+\ExplSyntaxOff
+
+% ---------------------------------MACROS-------------------------------------------
+
+% ---------------------------------DOCUMENT-----------------------------------------
+\input{exam-format}
+\input{header}
+\begin{document}
+\ExplSyntaxOn
+% write to answers file
+\iow_new:N \l_csv_iow
+\iow_open:Nn \l_csv_iow {answers-\setbegin-\setend.csv}
+\iow_now:Nn \l_csv_iow {Set,Question~No.,File~Name,Question~Marks,Correct~Answer}
+% print questions from all sets
+\int_new:N \l_set_now_int
+\int_new:N \l_set_end_int
+\int_set:Nn \l_set_now_int {\exp_args:Nf \int_from_alph:n {\setbegin}}
+\int_set:Nn \l_set_end_int {\exp_args:Nf \int_from_alph:n {\setend}}
+% loop through all sets
+\int_do_while:nn {\l_set_now_int <= \l_set_end_int} {
+    \xdef\set{\int_to_Alph:n \l_set_now_int}
+    \set_questions:
+    \int_incr:N \l_set_now_int
+}
+\endquestions % \end{questions}
+\iow_close:N \l_csv_iow % close csv file
+\ExplSyntaxOff
+\end{document}

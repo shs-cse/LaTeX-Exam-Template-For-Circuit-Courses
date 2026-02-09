@@ -1,0 +1,23 @@
+# remove the ".bkup" part from the file name if you want to actually use github actions to compile the pdf.
+
+name: Build LaTeX document
+on: [push]
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v6
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: main.tex
+      # - name: Rename PDF
+      #   run: mv main.pdf "${{ github.event.repository.name }}.pdf"
+      - name: Upload PDF file
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ github.event.repository.name }}-zipped
+          path: |
+            *.pdf
+            answers-*-*.csv
