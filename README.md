@@ -7,7 +7,7 @@ Summarized instructions for creating a question:
 - [Exam class](https://math.mit.edu/~psh/exam/examdoc.pdf) 
 - [Exam Random Choices](https://mirror.niser.ac.in/ctan/macros/latex/contrib/exam-randomizechoices/exam-randomizechoices-doc.pdf)
 - [`xfp` package documentation](http://mirrors.ctan.org/macros/latex/contrib/l3packages/xfp.pdf)
-- [$\rm\LaTeX3$ interfaces](https://ctan.math.illinois.edu/macros/latex/contrib/l3kernel/interface3.pdf) 
+- [LaTeX3 interfaces](https://ctan.math.illinois.edu/macros/latex/contrib/l3kernel/interface3.pdf) 
 
 
 ## Adding questions
