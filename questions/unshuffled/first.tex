@@ -1,3 +1,8 @@
+\makeatletter
+\let\@oldnoitemerr\@noitemerr % save the command definition 
+\let\@noitemerr\relax % stop mentioning no \item error
+\makeatother
+
 \newif\ifAorC
 \if\set A \AorCtrue\else\if\set C \AorCtrue\else \AorCfalse\fi\fi
 
@@ -35,3 +40,7 @@
         #1
     }
 \fi
+
+\makeatletter
+\let\@noitemerr\@oldnoitemerr % start mentioning no \item error
+\makeatother
