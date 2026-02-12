@@ -5,7 +5,7 @@ use File::Copy;
 use Cwd;
 
 END {
-    my $dir_name = basename(getcwd());
+    my $dir_name = $ENV{'TARGET_NAME'} || basename(getcwd());
     my $source = "main.pdf";
     my $dest = "${dir_name}.pdf";
     

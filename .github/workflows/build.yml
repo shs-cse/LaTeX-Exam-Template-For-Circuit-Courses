@@ -8,16 +8,19 @@ jobs:
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v6
+      - name: Extract branch name
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
-      # - name: Rename PDF
-      #   run: mv main.pdf "${{ github.event.repository.name }}.pdf"
+        env:
+          TARGET_NAME: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
       - name: Upload PDF file
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ github.event.repository.name }}-zipped
+          name: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
           path: |
             *.pdf
             answers-*-*.csv
