@@ -1,4 +1,4 @@
-
+# remove "-disabled" from the folder name for pdf compilation via github actions
 
 name: Build LaTeX document
 on: [push]
