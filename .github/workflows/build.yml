@@ -23,5 +23,5 @@ jobs:
         with:
           name: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}--zipped
           path: |
-            *.pdf
-            answers-*-*.csv
+            */*.pdf
+            */answers-*-*.csv
