@@ -13,12 +13,11 @@ jobs:
         uses: actions/checkout@v6
         with:
           path: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
-      - name: Change directory
-        run: cd "${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}"
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
+          working_directory: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
       - name: Upload PDF file
         uses: actions/upload-artifact@v6
         with:
