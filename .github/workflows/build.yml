@@ -6,22 +6,22 @@ jobs:
   build_latex:
     runs-on: ubuntu-latest
     steps:
-      - name: Extract branch name
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+      - name: Extract repo and branch name
+        run: echo "repobranch=${{ github.event.repository.name }}--${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_repobranch
       - name: Set up Git repository
         uses: actions/checkout@v6
         with:
-          path: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
+          path: ${{ steps.extract_repobranch.outputs.repobranch }}
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v4
         with:
           root_file: main.tex
-          working_directory: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}
+          working_directory: ${{ steps.extract_repobranch.outputs.repobranch }}
       - name: Upload PDF file
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ github.event.repository.name }}--${{ steps.extract_branch.outputs.branch }}--zipped
+          name: ${{ steps.extract_repobranch.outputs.repobranch }}--zipped
           path: |
             */*.pdf
             */answers-*-*.csv
