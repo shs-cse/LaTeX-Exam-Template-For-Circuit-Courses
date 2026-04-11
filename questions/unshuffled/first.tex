@@ -4,7 +4,9 @@
 \makeatother
 
 \newif\ifAorC
+\newif\ifAorB
 \if\set A \AorCtrue\else\if\set C \AorCtrue\else \AorCfalse\fi\fi
+\if\set A \AorBtrue\else\if\set B \AorBtrue\else \AorBfalse\fi\fi
 
 \ifx\set\setbegin % run once
     \let\oldphi\phi
@@ -40,6 +42,12 @@
         #1
     }
 \fi
+
+% \begin{EnvUplevel}
+%     \vspace{-24pt}
+%     If you want to add anything after instruction and before questions start.
+% \end{EnvUplevel}
+\fontsize{12}{14.5}\selectfont
 
 \makeatletter
 \let\@noitemerr\@oldnoitemerr % start mentioning no \item error

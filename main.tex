@@ -1,14 +1,14 @@
 % -------------------------------PARAMETERS-----------------------------------------
 % course related parameters
-\def\coursecode{CSE481}
-\def\coursename{Quantum Computing I}
+\def\coursecode{CSE250}
+\def\coursename{Circuits and Electronics}
 % section related parameters
-\def\semester{Fall 2025}
+\def\semester{Spring 2026}
 \def\sect{01} % can be omitted by commenting
 \def\faculty{SDS} % can be omitted by commenting
 % assessment related parameters
-\def\assessment{Lab Quiz}
-\def\duration{1 hour}
+\def\assessment{Quiz 1}
+\def\duration{30 minutes}
 % \def\date{November 3, 2025} % can be set to today by commenting
 % submission specific parameters
 % \def\deadline{November 07, 2023 by 11:59pm} % can be omitted by commenting
@@ -75,7 +75,7 @@
     % add dotted fold line
     \usepackage{eso-pic}
     \AddToShipoutPictureBG{%
-        \ifodd\thepage
+        % \ifodd\thepage
         \put(\LenToUnit{\paperwidth+69pt},\LenToUnit{-72pt}){
             \color{black!30}%
             \setlength{\unitlength}{1mm}%
@@ -83,7 +83,7 @@
                 \multiput(0,0)(0,3){100}{\line(0,1){0.5}}
             \end{picture}%
         }%
-        \fi
+        % \fi
     }
 }{
     \ifdefstring{\eachsetonsinglepaper}{A4}{
@@ -109,7 +109,10 @@
     \def\rng#1{\clr{orange}{#1}}
     \def\invrt#1{\ensuremath{\frac{1}{\sqrt{#1}}}}
     \DeclareMathOperator{\prob}{P}
-}{  % siunitx package setup
+}{ % electrical circuits
+    \docsvlist{P,V,I,R,Z,C,L,D}
+    \newcommand{\mn}[1]{\mathnormal{#1}}
+    % siunitx package setup
     \sisetup{parse-numbers=false}
     % short-hand for resistor units, e.g. 
     % in circuitikz: 1<\MO>, 2<\mA>, 3<\kV>, 4<\uF>, 5<\nH>, 6<\C> 
@@ -243,9 +246,11 @@
                 \tl_replace_once:Nnn \l_tempa_tl {\half} {.5}
                 \exp_args:NNo \str_set:Nn \l_tempa_str {\l_tempa_tl} % handle "??"
                 % write to csv file
-                \iow_now:Nx \l_csv_iow {
-                    \set, \thesetquestion, ##1, \l_tempa_str,
-                    \getrefnumber{question@\oldthequestion@correctchoice}
+                \str_if_eq:VnT \insertomrsheet {true} {
+                    \iow_now:Nx \l_csv_iow {
+                        \set, \thesetquestion, ##1, \l_tempa_str,
+                        \getrefnumber{question@\oldthequestion@correctchoice}
+                    }
                 }
                 \ifdefstring{\insertFilbreakAfterEachQuestion}{true}{\bigskip\filbreak}{}
             }
@@ -268,9 +273,11 @@
 \begin{document}
 \ExplSyntaxOn
 % write to answers file
-\iow_new:N \l_csv_iow
-\iow_open:Nn \l_csv_iow {answers-\setbegin-\setend.csv}
-\iow_now:Nn \l_csv_iow {Set,Question~No.,File~Name,Question~Marks,Correct~Answer}
+\str_if_eq:VnT \insertomrsheet {true} {
+    \iow_new:N \l_csv_iow
+    \iow_open:Nn \l_csv_iow {answers-\setbegin-\setend.csv}
+    \iow_now:Nn \l_csv_iow {Set,Question~No.,File~Name,Question~Marks,Correct~Answer}
+}
 % print questions from all sets
 \int_new:N \l_set_now_int
 \int_new:N \l_set_end_int
@@ -283,6 +290,8 @@
     \int_incr:N \l_set_now_int
 }
 \endquestions % \end{questions}
-\iow_close:N \l_csv_iow % close csv file
+\str_if_eq:VnT \insertomrsheet {true} {
+    \iow_close:N \l_csv_iow % close csv file
+}
 \ExplSyntaxOff
 \end{document}
